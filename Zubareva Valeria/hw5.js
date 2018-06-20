@@ -26,28 +26,25 @@ MenuItem.prototype.calculateCalories = function () {
     return calories;
 };
 
-try {
-    function Hamburger(size, stuffings) {
-        if (size === undefined) {
-            throw new Exception('Missing argument "size"');
-        } else if (size !== Hamburger.SIZE_SMALL && size !== Hamburger.SIZE_LARGE) {
-            throw new Exception('Invalid size');
-        } else if (stuffings.length === 0 || stuffings === undefined) {
-            throw new Exception('Missing argument "stuffings"');
-        } else {
-            for (var i = 0; i < stuffings.length; i++) {
-                if (stuffings[i] !== Hamburger.STUFFING_SALAD && stuffings[i] !== Hamburger.STUFFING_POTATO && stuffings[i] !== Hamburger.STUFFING_CHEESE) {
-                    throw new Exception('Invalid stuffings');
-                }
+function Hamburger(size, stuffings) {
+    if (size === undefined) {
+        throw new Exception('Missing argument "size"');
+    } else if (size !== Hamburger.SIZE_SMALL && size !== Hamburger.SIZE_LARGE) {
+        throw new Exception('Invalid size');
+    } else if (stuffings.length === 0 || stuffings === undefined) {
+        throw new Exception('Missing argument "stuffings"');
+    } else {
+        for (var i = 0; i < stuffings.length; i++) {
+            if (stuffings[i] !== Hamburger.STUFFING_SALAD && stuffings[i] !== Hamburger.STUFFING_POTATO && stuffings[i] !== Hamburger.STUFFING_CHEESE) {
+                throw new Exception('Invalid stuffings');
             }
-            MenuItem.apply(this, stuffings.concat(size));
-            this._size = size;
-            this._stuffing = stuffings;
         }
+        MenuItem.apply(this, stuffings.concat(size));
+        this._size = size;
+        this._stuffing = stuffings;
     }
-} catch (e) {
-    console.error(e.message);
 }
+
 
 Hamburger.SIZE_SMALL = {
     'name': 'small',
@@ -85,23 +82,20 @@ Hamburger.prototype.getStuffing = function () {
     return this._stuffing;
 };
 
-try {
-    function Salad(type, portion) {
-        if (type === undefined) {
-            throw new Exception('Missing argument "type"');
-        } else if (type !== Salad.OLIVIE && type !== Salad.CAESAR) {
-            throw new Exception('Incorrect argument type');
-        } else if (portion === undefined) {
-            throw new Exception('Missing argument "portion"');
-        } else {
-            MenuItem.call(this, type);
-            this._portion = portion;
-            this._type = type;
-        }
+function Salad(type, portion) {
+    if (type === undefined) {
+        throw new Exception('Missing argument "type"');
+    } else if (type !== Salad.OLIVIE && type !== Salad.CAESAR) {
+        throw new Exception('Incorrect argument type');
+    } else if (portion === undefined) {
+        throw new Exception('Missing argument "portion"');
+    } else {
+        MenuItem.call(this, type);
+        this._portion = portion;
+        this._type = type;
     }
-} catch (e) {
-    console.error(e.message);
 }
+
 Salad.CAESAR = {
     'name': 'caesar',
     'price': 100,
@@ -131,19 +125,17 @@ Salad.prototype.calculatePrice = function () {
 Salad.prototype.calculateCalories = function () {
     return this.getType().calories / Salad.STANDARTPRTION * this.getPortion();
 };
-try {
-    function Drink(type) {
-        if (type === undefined) {
-            throw new Exception('Missing argument "type"');
-        } else if (type !== Drink.COFFEE && type !== Drink.COLA) {
-            throw new Exception('Incorrect argument type');
-        } else {
-            MenuItem.call(this, type);
-        }
+
+function Drink(type) {
+    if (type === undefined) {
+        throw new Exception('Missing argument "type"');
+    } else if (type !== Drink.COFFEE && type !== Drink.COLA) {
+        throw new Exception('Incorrect argument type');
+    } else {
+        MenuItem.call(this, type);
     }
-} catch (e) {
-    console.error(e.message);
 }
+
 Drink.COLA = {
     'name': 'cola',
     'price': 50,
@@ -166,19 +158,17 @@ function Order() {
 Order.prototype.getPoints = function () {
     return this._points.slice(0);
 };
-try {
-    Order.prototype.setPoints = function (points) {
 
-        if (this.paid) {
-            throw new Exception('Order was "payd! You cannot change it!"');
-        } else {
-            this._points = points;
-        }
+Order.prototype.setPoints = function (points) {
 
+    if (this.paid) {
+        throw new Exception('Order was payd! You cannot change it!"');
+    } else {
+        this._points = points;
     }
-} catch (e) {
-    console.error(e.message);
-}
+
+};
+
 Order.prototype.calculatePrice = function () {
     var price = 0;
     this.getPoints().forEach(function (item) {
@@ -234,18 +224,26 @@ Menu.prototype.salad = function () {
     return new Salad(type, portion);
 };
 
-var myMenu = new Menu();
-var drink1 = myMenu.drink(Drink.COLA);
-var drink2 = myMenu.drink(Drink.COFFEE);
-var salad1 = myMenu.salad(Salad.CAESAR, 200);
-var hamburger1 = myMenu.hamburger(Hamburger.SIZE_LARGE, Hamburger.STUFFING_CHEESE, Hamburger.STUFFING_POTATO);
-var order = new Order(drink1, drink2, salad1, hamburger1);
+try {
+    var myMenu = new Menu();
+    var drink1 = myMenu.drink(Drink.COLA);
+    var drink2 = myMenu.drink(Drink.COFFEE);
+    var salad1 = myMenu.salad(Salad.CAESAR, 200);
+    var salad2 = myMenu.salad(Salad.OLIVIE, 100);
+    var hamburger1 = myMenu.hamburger(Hamburger.SIZE_LARGE, Hamburger.STUFFING_CHEESE, Hamburger.STUFFING_POTATO);
+    var order = new Order(drink1, drink2, salad1, hamburger1);
+    
+    order.add(salad2);
+    order.del(salad1);
 
-order.add(myMenu.salad(Salad.OLIVIE, 100));
-order.del(salad1);
+    order.pay();
 
-order.pay();
+    // order.add(myMenu.salad(Salad.OLIVIE, 100));
+    // order.del(salad2);
+    console.log(order, order.calculatePrice(), order.calculateCalories());
+} catch (e) {
+    console.error(e.message);
+}
 
-// order.add(myMenu.salad(Salad.OLIVIE, 100));
-console.log(order, order.calculatePrice(), order.calculateCalories());
+
 
